@@ -37,7 +37,12 @@ int main() {
            "********** Welcome To Shell! ********\n"
            "-------------------------------------\n");
     while(1){
+        char curr_working_dir[256];
+        if(getcwd(curr_working_dir, sizeof(curr_working_dir)) != NULL){
+            printf("%s>", curr_working_dir);
+        }
         char* user_in = getInput();
+
 
         if (!strncmp("ECHO ", user_in, strlen("ECHO "))){
             user_in += sizeof (char) * strlen("ECHO ");
