@@ -4,6 +4,8 @@
 #include <unistd.h>
 
 
+#define Localhost "127.0.0.1"
+
 char* getInput(){
     int cap = 0;
     char ch;
@@ -40,9 +42,25 @@ int main() {
         if (!strncmp("ECHO ", user_in, strlen("ECHO "))){
             user_in += sizeof (char) * strlen("ECHO ");
             printf("%s\n", user_in);
-            free(user_in);
         }
 
+
+        else if (!strcmp(user_in, "LOCAL")){
+            printf("TCP Connection...\n");
+        }
+
+        // Syntax: COPY <SRC> <DEST>
+        else if (!strcmp(user_in, "DIR")){
+            printf("DIR...\n");
+        }
+
+        else if (!strcmp(user_in, "CD")){
+            printf("CD...\n");
+        }
+
+        else if (!strcmp(user_in, "TCP PORT")){
+            printf("TCP Connection...\n");
+        }
 
         else if (!strcmp(user_in, "EXIT")){
             printf("Exiting...\n");
@@ -50,8 +68,8 @@ int main() {
             exit(1);
         }
         else{
-            printf("Try again!\n");
-            free(user_in);
+            printf("Invalid syntax. Try again!\n");
         }
+        free(user_in);
     }
 }
