@@ -2,9 +2,27 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
+#include<winsock2.h>
+#include <dirent.h>
 
 #define Localhost "127.0.0.1"
+
+
+void getDirFiles(){
+    char curr_working_dir[256];
+    if(getcwd(curr_working_dir, sizeof(curr_working_dir)) != NULL){
+        DIR *dir = opendir(curr_working_dir);
+        struct dirent *entry;
+        while((entry = readdir(dir))){
+            printf("%s\n", entry->d_name);  //prints a dir file's name.
+        }
+        closedir(dir);
+    }
+    else{
+        perror("Unable to read the directory!");
+    }
+
+}
 
 char* getInput(){
     int cap = 0;
@@ -13,7 +31,7 @@ char* getInput(){
     char* cpy = str;
     while((ch = getchar()) != EOF && ch != '\n'){
         cap++;
-        str = realloc(str, (cap+1)*sizeof(char));
+        str = realloc(str, (cap+1) * sizeof(char));
         if(!str)
         {
             printf("Long input!");
@@ -56,7 +74,7 @@ int main() {
 
         // Syntax: COPY <SRC> <DEST>
         else if (!strcmp(user_in, "DIR")){
-            printf("DIR...\n");
+            getDirFiles();
         }
 
         else if (!strcmp(user_in, "CD")){
