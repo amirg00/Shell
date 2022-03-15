@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include<winsock2.h>
+#include <winsock2.h>
 #include <dirent.h>
 
 #define Localhost "127.0.0.1"
@@ -77,8 +77,11 @@ int main() {
             getDirFiles();
         }
 
-        else if (!strcmp(user_in, "CD")){
-            printf("CD...\n");
+        else if (!strncmp("CD ", user_in, strlen("CD "))){
+            user_in += sizeof (char) * strlen("CD ");
+            if (chdir(user_in) == -1){  // chdir is a system call.
+                perror("System cannot find the path specified");
+            }
         }
 
         else if (!strcmp(user_in, "TCP PORT")){
