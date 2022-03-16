@@ -37,6 +37,14 @@ void write_file(FILE *file, char* dst_filename) {
     fclose(dst_file);
 }
 
+/**
+ * Function checks if the flag is on, if so then the message
+ * will be sent to the server over the socket (in our case it's a tcp-socket).
+ * O.W. function prints the message (through the standard output).
+ * @param flag a given flag (in our case it's a tcp_port flag).
+ * @param sock a given socket.
+ * @param message a given message.
+ */
 void send_by_flag(int flag, int sock, char* message){
     if (flag) {
         send(sock, message, strlen(message) ,0);
@@ -46,6 +54,12 @@ void send_by_flag(int flag, int sock, char* message){
     }
 }
 
+/**
+ * Function prints or sends message by the flag, when the message is the
+ * list of directories' names in the current working directory.
+ * @param tcp_port_flag flag which states if 'TCP PORT' command has entered.
+ * @param sock a given socket.
+ */
 void getDirFiles(int tcp_port_flag, int sock){
     char curr_working_dir[256];
     if(getcwd(curr_working_dir, sizeof(curr_working_dir)) != NULL){
