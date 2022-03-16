@@ -10,7 +10,7 @@
 
 #define Localhost "127.0.0.1"
 #define SERVER_PORT 5060
-#define SIZE 4096     // BUFFER SIZE
+#define SIZE 4096            // BUFFER SIZE (BYTES)
 #define _POSIX_SOURCE
 
 
@@ -61,6 +61,10 @@ void getDirFiles(int tcp_port_flag, int sock){
     }
 }
 
+/**
+ * Function gets an input from the user, without a certain bound on the input's length.
+ * @return the input string
+ */
 char* getInput(){
     int cap = 0;
     char ch;
@@ -190,8 +194,11 @@ int main() {
             free(user_in);
             exit(1);
         }
-        else{
-            send_by_flag(TCP_PORT_FLAG, sock, "Invalid syntax. Try again!");
+        else {
+            int res_state = system(user_in);
+            if (res_state == -1) {
+                send_by_flag(TCP_PORT_FLAG, sock, "Invalid syntax. Try again!");
+            }
         }
         // free(user_in);
     }
