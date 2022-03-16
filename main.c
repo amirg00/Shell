@@ -6,9 +6,36 @@
 #include <dirent.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 #define Localhost "127.0.0.1"
 #define SERVER_PORT 5060
+#define SIZE 4096     // BUFFER SIZE
+#define _POSIX_SOURCE
+
+
+/**
+* The method sends the given file in chunks of 1024 bytes to the server, in order
+* to measure the time taken for the server to fully receive the file.
+*
+* @note the implementation uses fopen, fread and fwrite, which are library calls.
+* @param file a given file pointer.
+* @param dst_filename a given server socket to send the file to.
+*/
+void write_file(FILE *file, char* dst_filename) {
+    char data[SIZE] = {0};
+    FILE *dst_file;
+    dst_file = fopen(dst_filename, "w");
+    if (dst_file == NULL){
+        perror("System cannot find the path specified");
+    }
+    while ((fread(data, 1, sizeof(data), file)) > 0) {
+        printf("%s", data);
+        fwrite(&data, sizeof(data), 1, dst_file);
+    }
+    fclose(file);
+    fclose(dst_file);
+}
 
 void send_by_flag(int flag, int sock, char* message){
     if (flag) {
@@ -113,7 +140,6 @@ int main() {
             }
         }
 
-        // Syntax: COPY <SRC> <DEST>
         else if (!strcmp(user_in, "DIR")){
             getDirFiles(TCP_PORT_FLAG, sock);
         }
@@ -123,6 +149,40 @@ int main() {
             if (chdir(user_in) == -1){  // chdir is a system call.
                 perror("System cannot find the path specified");
             }
+        }
+        // Syntax: COPY <SRC> <DEST>
+        else if(!strncmp("COPY ", user_in, strlen("COPY "))){
+            user_in += sizeof (char) * strlen("COPY ");
+            char src[256] = ""; char dest[256] = "";
+            int space_flag = 0, m = 0, k = 0;
+            for (int i = 0; i < strlen(user_in) ; ++i) {
+                if (user_in[i] == ' '){
+                    space_flag = 1;
+                    continue;
+                }
+                if (!space_flag){
+                    src[m++] = user_in[i];
+                }
+                else{
+                    dest[k++] = user_in[i];
+                }
+            }
+
+            FILE *src_file = fopen(src, "r");
+            if (src_file == NULL) {
+                perror("System couldn't open specified file");
+                continue;
+            }
+            write_file(src_file, dest);
+
+        }
+
+        else if(!strncmp("DELETE ", user_in, strlen("DELETE "))){
+            user_in += sizeof (char) * strlen("DELETE ");
+            if(unlink(user_in) == -1){ // This is a system call
+                perror("System couldn't delete the file");
+            }
+
         }
 
         else if (!strcmp(user_in, "EXIT")){
