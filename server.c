@@ -29,7 +29,7 @@ int main() {
     bzero(&server_addr, sizeof(server_addr));
     server_addr.sin_family      = AF_INET;
     server_addr.sin_port        = htons(PORT);
-    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
 
     // bind server
     printf("bind\n");
@@ -46,7 +46,6 @@ int main() {
         perror("Listen failed! something has occurred while listening.\n");
         exit(1);
     }
-    printf("User connected");
     addr_size = sizeof(clisock);
     clisock = accept(sock, (struct sockaddr *) &new_addr, &addr_size);
     if (clisock < 0){
@@ -57,7 +56,6 @@ int main() {
     while (1) {
         bzero(buff, SIZE);
         size_t bytes = read(clisock, buff, SIZE);
-        printf("%zu", bytes);
         if (bytes < 0) {
             perror("recv failed");
         } else if (bytes == 0) {

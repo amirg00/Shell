@@ -10,17 +10,22 @@
 #define Localhost "127.0.0.1"
 #define SERVER_PORT 5060
 
+void send_by_flag(int flag, int sock, char* message){
+    if (flag) {
+        send(sock, message, strlen(message) ,0);
+        send(sock, "\n", strlen("\n") ,0);
+    } else {
+        printf("%s\n", message);
+    }
+}
+
 void getDirFiles(int tcp_port_flag, int sock){
     char curr_working_dir[256];
     if(getcwd(curr_working_dir, sizeof(curr_working_dir)) != NULL){
         DIR *dir = opendir(curr_working_dir);
         struct dirent *entry;
         while((entry = readdir(dir))) {
-            if (tcp_port_flag) {
-                send(sock, entry->d_name, strlen(entry->d_name) ,0);
-            } else {
-                printf("%s\n", entry->d_name);  //prints a dir file's name.
-            }
+            send_by_flag(tcp_port_flag, sock, entry->d_name);
         }
         closedir(dir);
     }
@@ -77,7 +82,7 @@ int main() {
 
         if (!strncmp("ECHO ", user_in, strlen("ECHO "))){
             user_in += sizeof (char) * strlen("ECHO ");
-            printf("%s\n", user_in);
+            send_by_flag(TCP_PORT_FLAG, sock, user_in);
         }
 
         else if(!strcmp(user_in, "TCP PORT")){
@@ -98,12 +103,14 @@ int main() {
                 continue;
             }
             printf("connect succeeded\n");
-            write(sock, "hey", strlen("hey"));
 
         }
 
-        else if (!strcmp(user_in, "LOCAL")){
-            printf("TCP Connection...\n");
+        else if (!strcmp(user_in, "LOCAL")){ // close socket connections
+            TCP_PORT_FLAG = 0; // set back to false
+            if (sock >= 0){
+                close(sock);
+            }
         }
 
         // Syntax: COPY <SRC> <DEST>
@@ -121,14 +128,11 @@ int main() {
         else if (!strcmp(user_in, "EXIT")){
             printf("Exiting...\n");
             free(user_in);
-            if (sock >= 0){
-                close(sock);
-            }
             exit(1);
         }
         else{
-            printf("Invalid syntax. Try again!\n");
+            send_by_flag(TCP_PORT_FLAG, sock, "Invalid syntax. Try again!");
         }
-        free(user_in);
+        // free(user_in);
     }
 }
