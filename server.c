@@ -18,6 +18,7 @@ int main() {
     socklen_t addr_size;
     char buff[SIZE] = {0};
 
+    // CREATING THE SERVER SOCKET
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
         perror("Error in socket\n");
@@ -25,13 +26,13 @@ int main() {
     }
     printf("Server socket created successfully.\n");
 
-    // set the server
+    // SET THE SERVER IP AND PORT
     bzero(&server_addr, sizeof(server_addr));
     server_addr.sin_family      = AF_INET;
     server_addr.sin_port        = htons(PORT);
     server_addr.sin_addr.s_addr = INADDR_ANY;
 
-    // bind server
+    // SERVER BIND
     printf("bind\n");
     bind_response = bind(sock, (struct sockaddr *) &server_addr, sizeof(server_addr));
     if (bind_response < 0) {
@@ -40,12 +41,15 @@ int main() {
     }
     printf("Bind() successful\n");
 
+    // LISTEN FOR CONNECTIONS
     if (listen(sock, 1) == 0) {
         printf("Listening for any income connections...\n");
     } else {
         perror("Listen failed! something has occurred while listening.\n");
         exit(1);
     }
+
+    // ACCEPT CONNECTION
     addr_size = sizeof(clisock);
     clisock = accept(sock, (struct sockaddr *) &new_addr, &addr_size);
     if (clisock < 0){
@@ -53,6 +57,7 @@ int main() {
         exit(1);
     }
 
+    // READ/RECEIVE DATA SENT BY SHELL
     while (1) {
         bzero(buff, SIZE);
         size_t bytes = read(clisock, buff, SIZE);
