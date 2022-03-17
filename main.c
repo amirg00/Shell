@@ -125,50 +125,56 @@ int main() {
         /******************  Commands Section  *******************/
         //--------------------------------------------------------/
 
+        // ECHO COMMAND: ECHO <SOMETHING>
         if (!strncmp("ECHO ", user_in, strlen("ECHO "))){
             user_in += sizeof (char) * strlen("ECHO ");
             send_by_flag(TCP_PORT_FLAG, sock, user_in);
         }
 
+        // 'TCP PORT' COMMAND: TCP PORT
         else if(!strcmp(user_in, "TCP PORT")){
             TCP_PORT_FLAG = 1; // SET FLAG TO TRUE
+
+            // CREATING THE SERVER SOCKET
             sock = socket(AF_INET, SOCK_STREAM, 0);
             if (sock < 0){
                 perror("Error in socket");
                 continue;
             }
+            // SET THE SERVER IP AND PORT
             bzero(&server_addr, sizeof(server_addr));
             server_addr.sin_family      = AF_INET;
             server_addr.sin_port        = htons(SERVER_PORT);
             server_addr.sin_addr.s_addr = inet_addr(Localhost);
 
+            // CONNECT TO SERVER
             int connRes = connect(sock, (struct sockaddr *) &server_addr, sizeof(server_addr));
             if (connRes == -1){
                 perror("Error in socket");
                 continue;
             }
             printf("connect succeeded\n");
-
         }
 
+        // LOCAL COMMAND: LOCAL <SOMETHING>
         else if (!strcmp(user_in, "LOCAL")){ // close socket connections
             TCP_PORT_FLAG = 0; // set back to false
             if (sock >= 0){
                 close(sock);
             }
         }
-
+        // DIR COMMAND: DIR
         else if (!strcmp(user_in, "DIR")){
             getDirFiles(TCP_PORT_FLAG, sock);
         }
-
+        // CD COMMAND: CD <SOMETHING>
         else if (!strncmp("CD ", user_in, strlen("CD "))){
             user_in += sizeof (char) * strlen("CD ");
             if (chdir(user_in) == -1){  // chdir is a system call.
                 perror("System cannot find the path specified");
             }
         }
-        // Syntax: COPY <SRC> <DEST>
+        // COPY COMMAND: Syntax: COPY <SRC> <DEST>
         else if(!strncmp("COPY ", user_in, strlen("COPY "))){
             user_in += sizeof (char) * strlen("COPY ");
             char src[256] = ""; char dest[256] = "";
@@ -194,7 +200,7 @@ int main() {
             write_file(src_file, dest);
 
         }
-
+        // DELETE COMMAND: DELETE <SOMETHING>
         else if(!strncmp("DELETE ", user_in, strlen("DELETE "))){
             user_in += sizeof (char) * strlen("DELETE ");
             if(unlink(user_in) == -1){ // This is a system call
@@ -202,13 +208,13 @@ int main() {
             }
 
         }
-
+        // EXIT COMMAND: EXIT
         else if (!strcmp(user_in, "EXIT")){
             printf("Exiting...\n");
             free(user_in);
             exit(1);
         }
-        else {
+        else { // OTHER COMMAND: SYSTEM(COMMAND)
             int res_state = system(user_in);
             if (res_state == -1) {
                 send_by_flag(TCP_PORT_FLAG, sock, "Invalid syntax. Try again!");
