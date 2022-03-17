@@ -130,7 +130,6 @@ int main() {
             user_in += sizeof (char) * strlen("ECHO ");
             send_by_flag(TCP_PORT_FLAG, sock, user_in);
         }
-
         // 'TCP PORT' COMMAND: TCP PORT
         else if(!strcmp(user_in, "TCP PORT")){
             TCP_PORT_FLAG = 1; // SET FLAG TO TRUE
@@ -155,7 +154,6 @@ int main() {
             }
             printf("connect succeeded\n");
         }
-
         // LOCAL COMMAND: LOCAL <SOMETHING>
         else if (!strcmp(user_in, "LOCAL")){ // close socket connections
             TCP_PORT_FLAG = 0; // set back to false
