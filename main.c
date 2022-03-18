@@ -100,6 +100,33 @@ char* getInput(){
     return str;
 }
 
+
+void execOtherCommand(char* command){
+    char delim[] = " \n\r\t";
+    char* token;
+    char* vec[256] = {0};
+    int k = 0;
+    for (token = strtok(command, delim); token; token = strtok(NULL, delim))
+    {
+        vec[k++] = token;
+    }
+    vec[k] = NULL;
+
+    int pid = fork();
+    if(pid == -1){
+        perror("couldn't create a child");
+        return;
+    }
+    if(pid == 0){ // Child process
+        execvpe(vec[0], vec);
+    }
+    else{ // Parent process
+        wait(NULL);
+    }
+
+
+}
+
 int main() {
 
     //--------------------------------------------------------/
@@ -213,10 +240,11 @@ int main() {
             exit(1);
         }
         else { // OTHER COMMAND: SYSTEM(COMMAND)
-            int res_state = system(user_in);
-            if (res_state == -1) {
-                send_by_flag(TCP_PORT_FLAG, sock, "Invalid syntax. Try again!");
-            }
+            execOtherCommand(user_in);
+//            int res_state = system(user_in);
+//            if (res_state == -1) {
+//                send_by_flag(TCP_PORT_FLAG, sock, "Invalid syntax. Try again!");
+//            }
         }
         // free(user_in);
     }

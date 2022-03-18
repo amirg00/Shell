@@ -2,7 +2,7 @@
 
 all: main server
 
-main:main.c
+main: main.c
 	gcc -o main main.c
 
 server: server.c
