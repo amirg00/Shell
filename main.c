@@ -99,6 +99,13 @@ char* getInput(){
     return str;
 }
 
+/**
+ * Function gets the command and splits it by the spaces chars ('\n', '\r', ' ', '\t') then puts it in an array.
+ * After we have this array, we can execute with one of the exec functions (execvp), but then the process is terminated.
+ * Therefore, we apply fork() function to create a children process which executes, and in the meantime the parent
+ * process waits via wait() function.
+ * @param command a given shell command
+ */
 void execOtherCommand(char* command){
     char delim[] = " \n\r\t";
     char* token;
