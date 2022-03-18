@@ -6,12 +6,11 @@
 #include <dirent.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
+#include <sys/wait.h>
 
 #define Localhost "127.0.0.1"
 #define SERVER_PORT 5060
 #define SIZE 4096            // BUFFER SIZE (BYTES)
-#define _POSIX_SOURCE
 
 
 /**
@@ -100,7 +99,6 @@ char* getInput(){
     return str;
 }
 
-
 void execOtherCommand(char* command){
     char delim[] = " \n\r\t";
     char* token;
@@ -118,13 +116,11 @@ void execOtherCommand(char* command){
         return;
     }
     if(pid == 0){ // Child process
-        execvpe(vec[0], vec);
+        execvp(vec[0], vec);
     }
     else{ // Parent process
         wait(NULL);
     }
-
-
 }
 
 int main() {
@@ -246,6 +242,5 @@ int main() {
 //                send_by_flag(TCP_PORT_FLAG, sock, "Invalid syntax. Try again!");
 //            }
         }
-        // free(user_in);
     }
 }
