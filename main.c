@@ -238,7 +238,6 @@ int main() {
         }
         // EXIT COMMAND: EXIT
         else if (!strcmp(user_in, "EXIT")){
-            printf("Exiting...\n");
             free(user_in);
             exit(1);
         }
