@@ -29,7 +29,6 @@ void write_file(FILE *file, char* dst_filename) {
         perror("System cannot find the path specified");
     }
     while ((fread(data, 1, sizeof(data), file)) > 0) {
-        printf("%s", data);
         fwrite(&data, sizeof(data), 1, dst_file);
     }
     fclose(file);
@@ -106,7 +105,7 @@ char* getInput(){
  * process waits via wait() function.
  * @param command a given shell command
  */
-void execOtherCommand(char* command){
+void execOtherCommand(char* command, int sock, int tcp_port_flag){
     char delim[] = " \n\r\t";
     char* token;
     char* vec[256] = {0};
@@ -123,6 +122,7 @@ void execOtherCommand(char* command){
         return;
     }
     if(pid == 0){ // Child process
+        if (tcp_port_flag){dup2(sock, STDOUT_FILENO);}
         execvp(vec[0], vec);
     }
     else{ // Parent process
@@ -243,7 +243,7 @@ int main() {
             exit(1);
         }
         else { // OTHER COMMAND: SYSTEM(COMMAND)
-            execOtherCommand(user_in);
+            execOtherCommand(user_in, sock, TCP_PORT_FLAG);
 //            int res_state = system(user_in);
 //            if (res_state == -1) {
 //                send_by_flag(TCP_PORT_FLAG, sock, "Invalid syntax. Try again!");
