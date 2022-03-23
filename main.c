@@ -243,7 +243,7 @@ int main() {
         }
         else { // OTHER COMMAND: SYSTEM(COMMAND)
             execOtherCommand(user_in, sock, TCP_PORT_FLAG);
-//            int res_state = system(user_in);
+//            int res_state = system(user_in); // system is a library function
 //            if (res_state == -1) {
 //                send_by_flag(TCP_PORT_FLAG, sock, "Invalid syntax. Try again!");
 //            }
