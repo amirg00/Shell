@@ -64,7 +64,7 @@ As above, we will compile files and run the server.
 <img align="center" src="Pics/shell_runServer.png" />
 </p>
 
-Now, we will run the shell.
+Now, we will run the shell in the second terminal.
 
 <p align="center">
 <img align="center" src="Pics/shell_runMain.png" />
