@@ -1,8 +1,7 @@
 
-
-
 # Introduction:
-
+The main goal of this assignment is to create a shell, which
+focuses the following subjects/commands fork, exec, exit, dup, etc...
 
 ## Tasks:
 
